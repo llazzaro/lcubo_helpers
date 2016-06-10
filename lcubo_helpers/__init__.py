@@ -55,8 +55,13 @@ def init_session(database_filename):
     return DBSession
 
 
-def enqeue_json(redis_server, key, data):
-    raise NotImplementedError
+def pushqueue_json(redis_server, key, data):
+    data = json.dumps(data)
+    redis_server.rpush(key, data)
+
+
+def popqueue_json(redis_server, key):
+    redis_server.lpop(key)
 
 
 def load_json(redis_server, key):
