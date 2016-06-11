@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
+import time
 import json
 
 from sqlalchemy import create_engine
 from sqlalchemy.sql.expression import ClauseElement
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import sessionmaker
+
+ftime = time.time() * 1000000
 
 
 def incremental_filename(dump_directory, orig_filename):
@@ -70,3 +73,8 @@ def load_json(redis_server, key):
 
 def save_json(redis_server, key, data):
     redis_server.set(key, json.dumps(data))
+
+
+def uptime():
+    microtime = int(round(time.time() * 1000000)) - ftime
+    return microtime
