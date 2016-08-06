@@ -68,7 +68,10 @@ def popqueue_json(redis_server, key):
 
 
 def load_json(redis_server, key):
-    return json.loads(redis_server.get(key) or '{}')
+    data = redis_server.get(key)
+    if data:
+        return json.loads(data.decode('utf8'))
+    return {}
 
 
 def save_json(redis_server, key, data):
