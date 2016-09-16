@@ -81,3 +81,6 @@ def save_json(redis_server, key, data):
 def uptime():
     microtime = int(round(time.time() * 1000000)) - ftime
     return microtime
+
+def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):                                                                                                                                                  
+    return abs(a - b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol) 
