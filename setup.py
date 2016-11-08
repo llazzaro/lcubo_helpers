@@ -22,7 +22,7 @@ test_requirements = [
 
 setup(
     name='lcubo_helpers',
-    version='0.1.3',
+    version='0.1.4',
     description="some functions and classes I copy paste in several projects. this is a kitten saver",
     long_description=readme + '\n\n' + history,
     author="Leonardo Lazzaro",
