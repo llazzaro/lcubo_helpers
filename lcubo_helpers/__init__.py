@@ -58,6 +58,11 @@ def init_session(database_filename):
     return DBSession
 
 
+def init_db(Base, database_filename):
+    engine = create_engine('sqlite:///{0}'.format(database_filename), echo=False)
+    Base.metadata.create_all(bind=engine)
+    
+
 def pushqueue_json(redis_server, key, data):
     data = json.dumps(data)
     redis_server.rpush(key, data)
