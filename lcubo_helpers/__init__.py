@@ -2,6 +2,7 @@
 import os
 import time
 import json
+import logging
 
 from sqlalchemy import create_engine
 from sqlalchemy.sql.expression import ClauseElement
@@ -9,6 +10,28 @@ from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import sessionmaker
 
 ftime = time.time() * 1000000
+
+
+def init_logging(level=None):
+    logger = logging.getLogger('tesis')
+    if not level:
+        logger.setLevel(logging.INFO)
+    if level == 'warning':
+        logger.setLevel(logging.WARN)
+    # create file handler which logs even debug messages
+    fh = logging.FileHandler('tesis.log')
+    fh.setLevel(logging.INFO)
+    # create console handler with a higher log level
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setLevel(logging.INFO)
+    # create formatter and add it to the handlers
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    ch.setFormatter(formatter)
+    # add the handlers to the logger
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+    logger.warning('Logging level set to {0}'.format(level))
 
 
 def incremental_filename(dump_directory, orig_filename):
