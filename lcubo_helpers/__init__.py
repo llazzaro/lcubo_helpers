@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import time
 import json
 import logging
+from datetime import datetime
 
 from sqlalchemy import create_engine
 from sqlalchemy.sql.expression import ClauseElement
@@ -84,7 +86,7 @@ def init_session(database_filename):
 def init_db(Base, database_filename):
     engine = create_engine('sqlite:///{0}'.format(database_filename), echo=False)
     Base.metadata.create_all(bind=engine)
-    
+
 
 def pushqueue_json(redis_server, key, data):
     data = json.dumps(data)
@@ -110,17 +112,46 @@ def uptime():
     microtime = int(round(time.time() * 1000000)) - ftime
     return microtime
 
-def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):                                                                                                                                                  
-    return abs(a - b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol) 
+
+def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
+    return abs(a - b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
 
 def memoize(function):
-  memo = {}
-  def wrapper(*args):
-    if args in memo:
-      return memo[args]
-    else:
-      rv = function(*args)
-      memo[args] = rv
-      return rv
-  return wrapper
+    memo = {}
+
+    def wrapper(*args):
+        if args in memo:
+            return memo[args]
+        else:
+            rv = function(*args)
+            memo[args] = rv
+            return rv
+    return wrapper
+
+
+# Classes should be camel case, but in this case I don't want
+# a decorator in camel case.
+class memoize_timeout(object):
+
+    def __init__(self, timeout):
+        self.timeout = timeout
+        self.last_call_time = None
+        self.memo = {}
+        print(self)
+
+    def __call__(self, function):
+        def wrapper(*args):
+            delta = self.timeout + 1
+            if self.last_call_time:
+                delta = datetime.now() - self.last_call_time
+                delta = delta.seconds
+
+            if delta > self.timeout or args not in self.memo:
+                results = function(*args)
+                self.memo[args] = results
+                self.last_call_time = datetime.now()
+                return results
+            else:
+                return self.memo[args]
+        return wrapper
